@@ -5,10 +5,7 @@ import { supabase } from '../supabase/supabaseClient'
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 }
 
 const cardVariants = {
@@ -40,12 +37,14 @@ export default function ProjectsSection() {
     fetchProjects()
   }, [])
 
+  // ⭐ NEW SORTING LOGIC ADDED HERE
   const fetchProjects = async () => {
     try {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('sort_order', { ascending: true })     // FIRST SORT
+        .order('created_at', { ascending: false })    // SECOND SORT
 
       if (error) throw error
       setProjects(data || [])
@@ -110,7 +109,6 @@ export default function ProjectsSection() {
         >
           <h2 className="text-5xl font-bold text-slate-800">Projects</h2>
 
-          {/* ⭐ FIXED VIEW ALL — Using Link instead of <a> */}
           <Link to="/projects">
             <motion.div
               className="text-blue-600 hover:text-blue-800 font-semibold flex items-center cursor-pointer"
@@ -121,7 +119,7 @@ export default function ProjectsSection() {
           </Link>
         </motion.div>
 
-        {/* Horizontal Scroll Section */}
+        {/* Horizontal Scroll */}
         <motion.div
           className="flex gap-6 overflow-x-auto scrollbar-hide pb-3"
           variants={containerVariants}
@@ -136,7 +134,6 @@ export default function ProjectsSection() {
               variants={cardVariants}
               className="group relative"
               style={{ scrollSnapAlign: "start" }}
-
               onMouseEnter={() => {
                 const timer = setTimeout(() => {
                   setSelectedProject(project)
@@ -145,15 +142,16 @@ export default function ProjectsSection() {
                 setHoverTimer(timer)
               }}
               onMouseLeave={() => clearTimeout(hoverTimer)}
-
               whileHover={{
                 y: -10,
                 scale: 1.02,
                 transition: { duration: 0.3 },
               }}
             >
+              {/* Card */}
               <div className="bg-white rounded-xl border border-slate-200 shadow-lg hover:shadow-2xl cursor-pointer transition-all hover:border-blue-300 min-w-[300px] max-w-[300px] h-[420px] flex flex-col overflow-hidden">
 
+                {/* Image */}
                 {project.image_url && (
                   <div className="h-40 overflow-hidden flex-shrink-0 relative">
                     <motion.img
@@ -167,12 +165,12 @@ export default function ProjectsSection() {
                   </div>
                 )}
 
+                {/* Content */}
                 <div className="p-5 flex flex-col justify-between h-full">
                   <div>
                     <h3 className="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-1">
                       {project.title}
                     </h3>
-
                     <p className="text-slate-600 text-sm mt-2 line-clamp-3">
                       {project.description}
                     </p>
@@ -206,7 +204,7 @@ export default function ProjectsSection() {
           ))}
         </motion.div>
 
-        {/* If no projects */}
+        {/* No Projects */}
         {projects.length === 0 && (
           <motion.div
             className="text-center text-slate-500 py-12 bg-white/50 rounded-xl mt-10"
@@ -237,6 +235,7 @@ export default function ProjectsSection() {
                 exit={{ scale: 0.9, opacity: 0 }}
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* Modal Content */}
                 {!showFeedbackForm ? (
                   <>
                     <div className="flex justify-between items-start mb-6">
@@ -268,14 +267,9 @@ export default function ProjectsSection() {
                       </motion.div>
                     )}
 
-                    <motion.p
-                      className="text-slate-700 text-lg leading-relaxed whitespace-pre-line mb-6"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                    >
+                    <p className="text-slate-700 text-lg leading-relaxed whitespace-pre-line mb-6">
                       {selectedProject.description}
-                    </motion.p>
+                    </p>
 
                     <div className="flex gap-4 mb-6">
                       {selectedProject.github_link && (
