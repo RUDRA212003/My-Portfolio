@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { supabase } from '../supabase/supabaseClient'
 
 const containerVariants = {
@@ -108,16 +109,19 @@ export default function ProjectsSection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-5xl font-bold text-slate-800">Projects</h2>
-          <motion.a
-            href="/projects"
-            className="text-blue-600 hover:text-blue-800 font-semibold flex items-center"
-            whileHover={{ x: 5 }}
-          >
-            View All →
-          </motion.a>
+
+          {/* ⭐ FIXED VIEW ALL — Using Link instead of <a> */}
+          <Link to="/projects">
+            <motion.div
+              className="text-blue-600 hover:text-blue-800 font-semibold flex items-center cursor-pointer"
+              whileHover={{ x: 5 }}
+            >
+              View All →
+            </motion.div>
+          </Link>
         </motion.div>
 
-        {/* ⭐ Horizontal Scroll Netflix-Style */}
+        {/* Horizontal Scroll Section */}
         <motion.div
           className="flex gap-6 overflow-x-auto scrollbar-hide pb-3"
           variants={containerVariants}
@@ -148,11 +152,8 @@ export default function ProjectsSection() {
                 transition: { duration: 0.3 },
               }}
             >
-
-              {/* ⭐ SAME SIZE CARD */}
               <div className="bg-white rounded-xl border border-slate-200 shadow-lg hover:shadow-2xl cursor-pointer transition-all hover:border-blue-300 min-w-[300px] max-w-[300px] h-[420px] flex flex-col overflow-hidden">
 
-                {/* Image */}
                 {project.image_url && (
                   <div className="h-40 overflow-hidden flex-shrink-0 relative">
                     <motion.img
@@ -166,7 +167,6 @@ export default function ProjectsSection() {
                   </div>
                 )}
 
-                {/* Content */}
                 <div className="p-5 flex flex-col justify-between h-full">
                   <div>
                     <h3 className="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-1">
@@ -206,7 +206,7 @@ export default function ProjectsSection() {
           ))}
         </motion.div>
 
-        {/* No Projects */}
+        {/* If no projects */}
         {projects.length === 0 && (
           <motion.div
             className="text-center text-slate-500 py-12 bg-white/50 rounded-xl mt-10"
@@ -352,7 +352,6 @@ export default function ProjectsSection() {
             </motion.div>
           )}
         </AnimatePresence>
-
       </div>
     </section>
   )
