@@ -8,13 +8,16 @@ export default function ProjectsManager() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingProject, setEditingProject] = useState(null)
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     image_url: '',
     github_link: '',
     demo_link: '',
+    sort_order: 1, // ⭐ New field
   })
+
   const [uploading, setUploading] = useState(false)
   const [selectedProject, setSelectedProject] = useState(null)
   const [feedback, setFeedback] = useState([])
@@ -24,11 +27,13 @@ export default function ProjectsManager() {
     fetchProjects()
   }, [])
 
+  // ⭐ Fetch projects sorted by position first, then date
   const fetchProjects = async () => {
     try {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
+        .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -74,8 +79,10 @@ export default function ProjectsManager() {
     }
   }
 
+  // ⭐ Insert or Update including sort_order
   const handleSubmit = async (e) => {
     e.preventDefault()
+
     try {
       if (editingProject) {
         const { error } = await supabase
@@ -92,7 +99,15 @@ export default function ProjectsManager() {
       alert('Project saved successfully!')
       setShowForm(false)
       setEditingProject(null)
-      setFormData({ title: '', description: '', image_url: '', github_link: '', demo_link: '' })
+      setFormData({
+        title: '',
+        description: '',
+        image_url: '',
+        github_link: '',
+        demo_link: '',
+        sort_order: 1,
+      })
+
       fetchProjects()
     } catch (error) {
       console.error('Error saving project:', error)
@@ -108,6 +123,7 @@ export default function ProjectsManager() {
       image_url: project.image_url || '',
       github_link: project.github_link || '',
       demo_link: project.demo_link || '',
+      sort_order: project.sort_order || 1, // ⭐ Load existing position
     })
     setShowForm(true)
   }
@@ -132,29 +148,25 @@ export default function ProjectsManager() {
     fetchFeedback(project.id)
   }
 
-  if (loading) {
-    return <div className="text-center py-8">Loading...</div>
-  }
+  if (loading) return <div className="text-center py-8">Loading...</div>
 
+  // ⭐ Feedback view page
   if (selectedProject) {
     return (
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <button
-              onClick={() => {
-                setSelectedProject(null)
-                setFeedback([])
-              }}
-              className="text-blue-600 hover:text-blue-800 mb-2"
-            >
-              ← Back to Projects
-            </button>
-            <h2 className="text-2xl font-bold text-gray-800">
-              Feedback for: {selectedProject.title}
-            </h2>
-          </div>
-        </div>
+        <button
+          onClick={() => {
+            setSelectedProject(null)
+            setFeedback([])
+          }}
+          className="text-blue-600 hover:text-blue-800 mb-2"
+        >
+          ← Back to Projects
+        </button>
+
+        <h2 className="text-2xl font-bold text-gray-800">
+          Feedback for: {selectedProject.title}
+        </h2>
 
         <div className="space-y-4">
           {feedback.length === 0 ? (
@@ -191,7 +203,14 @@ export default function ProjectsManager() {
           onClick={() => {
             setShowForm(true)
             setEditingProject(null)
-            setFormData({ title: '', description: '', image_url: '', github_link: '' })
+            setFormData({
+              title: '',
+              description: '',
+              image_url: '',
+              github_link: '',
+              demo_link: '',
+              sort_order: 1,
+            })
           }}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
         >
@@ -199,28 +218,30 @@ export default function ProjectsManager() {
         </button>
       </div>
 
+      {/* ⭐ Form */}
       {showForm && (
         <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
           <h3 className="text-lg font-semibold mb-4">
             {editingProject ? 'Edit Project' : 'Add New Project'}
           </h3>
+
           <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Title
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
               <input
                 type="text"
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
               />
             </div>
+
+            {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
               <textarea
                 required
                 value={formData.description}
@@ -228,47 +249,64 @@ export default function ProjectsManager() {
                   setFormData({ ...formData, description: e.target.value })
                 }
                 rows="4"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
               />
             </div>
+
+            {/* GitHub */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                GitHub Link
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">GitHub Link</label>
               <input
                 type="url"
                 value={formData.github_link}
                 onChange={(e) =>
                   setFormData({ ...formData, github_link: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 placeholder="https://github.com/..."
               />
             </div>
+
+            {/* Demo */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Demo Link
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Demo Link</label>
               <input
                 type="url"
                 value={formData.demo_link}
                 onChange={(e) =>
                   setFormData({ ...formData, demo_link: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://your-demo-link.com"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                placeholder="https://demo-link.com"
               />
             </div>
+
+            {/* ⭐ Position Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image
+                Position (1 = show first)
               </label>
+              <input
+                type="number"
+                min="1"
+                value={formData.sort_order}
+                onChange={(e) =>
+                  setFormData({ ...formData, sort_order: Number(e.target.value) })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+
+            {/* Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
               <ImageUpload
                 onUpload={handleImageUpload}
                 currentImage={formData.image_url}
                 uploading={uploading}
               />
             </div>
+
             <div className="flex space-x-4">
               <button
                 type="submit"
@@ -276,12 +314,12 @@ export default function ProjectsManager() {
               >
                 {editingProject ? 'Update' : 'Create'} Project
               </button>
+
               <button
                 type="button"
                 onClick={() => {
                   setShowForm(false)
                   setEditingProject(null)
-                  setFormData({ title: '', description: '', image_url: '', github_link: '', demo_link: '' })
                 }}
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
               >
@@ -292,6 +330,7 @@ export default function ProjectsManager() {
         </div>
       )}
 
+      {/* Project Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects.map((project) => (
           <div
@@ -305,37 +344,33 @@ export default function ProjectsManager() {
                 className="w-full h-32 object-cover rounded mb-2"
               />
             )}
+
             <h3 className="font-semibold text-gray-800">{project.title}</h3>
+
             <p className="text-sm text-gray-600 mb-2 line-clamp-2">
               {project.description}
             </p>
+
+            {/* github link */}
             {project.github_link && (
               <a
                 href={project.github_link}
                 target="_blank"
-                rel="noopener noreferrer"
                 className="text-blue-600 text-sm"
               >
                 GitHub →
               </a>
             )}
+
+            {/* Action Buttons */}
             <div className="flex space-x-2 mt-4">
-              <button
-                onClick={() => handleEdit(project)}
-                className="text-blue-600 hover:text-blue-800 text-sm"
-              >
+              <button onClick={() => handleEdit(project)} className="text-blue-600 text-sm">
                 Edit
               </button>
-              <button
-                onClick={() => handleViewFeedback(project)}
-                className="text-green-600 hover:text-green-800 text-sm"
-              >
+              <button onClick={() => handleViewFeedback(project)} className="text-green-600 text-sm">
                 View Feedback
               </button>
-              <button
-                onClick={() => handleDelete(project.id)}
-                className="text-red-600 hover:text-red-800 text-sm"
-              >
+              <button onClick={() => handleDelete(project.id)} className="text-red-600 text-sm">
                 Delete
               </button>
             </div>
