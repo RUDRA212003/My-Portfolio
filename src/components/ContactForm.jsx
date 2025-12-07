@@ -11,6 +11,34 @@ export default function ContactForm() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
+  const socialLinks = [
+    {
+      name: 'LinkedIn',
+      href: 'https://www.linkedin.com/in/rudresh-manjunath21/',
+      icon: 'https://cdn-icons-png.flaticon.com/512/174/174857.png',
+    },
+    {
+      name: 'X',
+      href: 'https://x.com/yo_rudra',
+      icon: 'https://cdn-icons-png.flaticon.com/512/5968/5968958.png',
+    },
+    {
+      name: 'Instagram',
+      href: 'https://www.instagram.com/yoyorudra_offical/?hl=en',
+      icon: 'https://cdn-icons-png.flaticon.com/512/2111/2111463.png',
+    },
+    {
+      name: 'YouTube',
+      href: 'https://www.youtube.com/@yoyorudraandroidtech',
+      icon: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png',
+    },
+    {
+      name: 'Email',
+      href: 'mailto:rudreshmanjunath15@gmail.com',
+      icon: 'https://cdn-icons-png.flaticon.com/512/732/732200.png',
+    },
+  ]
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSubmitting(true)
@@ -36,150 +64,161 @@ export default function ContactForm() {
   }
 
   return (
-    <section className="relative py-20 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
-      {/* Animated Background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+    <section className="relative py-24 bg-gradient-to-b from-slate-100 to-white overflow-hidden">
+
+      {/* Floating Blobs */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-blue-400 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute bottom-0 right-10 w-80 h-80 bg-purple-400 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-400 rounded-full opacity-10 blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Title */}
+      <div className="text-center mb-14">
         <motion.h2
-          className="text-5xl lg:text-6xl font-bold text-center mb-12 text-slate-800"
-          initial={{ opacity: 0, y: -30 }}
+          initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
+          className="text-5xl font-extrabold text-slate-800 drop-shadow-sm"
         >
-          Get In Touch
+          Get in Touch
         </motion.h2>
+        <p className="text-slate-500 mt-3 text-lg">
+          Feel free to contact me anytime ✨
+        </p>
+      </div>
 
+      {/* Wrapper */}
+      <div className="max-w-3xl mx-auto px-6">
+
+        {/* Success Message */}
         {submitted ? (
           <motion.div
-            className="bg-emerald-100 border-2 border-emerald-400 text-emerald-700 px-6 py-4 rounded-xl text-center"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 200 }}
+            className="bg-white rounded-2xl shadow-2xl p-10 text-center border border-slate-200 backdrop-blur-sm"
           >
             <motion.div
-              className="text-4xl mb-2"
               animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6 }}
+              className="text-5xl text-green-500 mb-4"
             >
               ✓
             </motion.div>
-            <p className="font-semibold text-lg">
-              Thank you for your message! I'll get back to you soon.
+
+            <h3 className="text-xl font-semibold text-green-600 mb-3">
+              Message Sent!
+            </h3>
+            <p className="text-slate-600">
+              Thank you! I'll get back to you soon.
             </p>
+
+            {/* Heading for Social */}
+            <p className="text-slate-700 font-medium text-lg mt-8 mb-3">
+              Find me on my other social platforms:
+            </p>
+
+            {/* Social Icons */}
+            <div className="flex justify-center gap-5">
+              {socialLinks.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:scale-110 transition-transform"
+                  title={s.name}
+                >
+                  <img src={s.icon} className="w-10 h-10 drop-shadow-md" />
+                </a>
+              ))}
+            </div>
           </motion.div>
         ) : (
+
+          /* Form */
           <motion.form
             onSubmit={handleSubmit}
-            className="space-y-6 bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-slate-200"
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-slate-200 p-10 space-y-8"
           >
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Name
-              </label>
+
+            {/* Name */}
+            <div className="relative">
               <input
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all bg-white"
-                placeholder="Your name"
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-4 py-4 border-2 border-slate-300 rounded-xl bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-200 outline-none peer"
               />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Email
+              <label className="absolute left-4 top-2 text-slate-500 text-sm transition-all peer-focus:text-blue-500 peer-focus:-translate-y-4 peer-focus:scale-90">
+                Name
               </label>
+            </div>
+
+            {/* Email */}
+            <div className="relative">
               <input
                 type="email"
                 required
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all bg-white"
-                placeholder="your.email@example.com"
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-4 py-4 border-2 border-slate-300 rounded-xl bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-200 outline-none peer"
               />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-            >
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Message
+              <label className="absolute left-4 top-2 text-slate-500 text-sm transition-all peer-focus:text-blue-500 peer-focus:-translate-y-4 peer-focus:scale-90">
+                Email
               </label>
+            </div>
+
+            {/* Message */}
+            <div className="relative">
               <textarea
+                rows="6"
                 required
                 value={formData.message}
-                onChange={(e) =>
-                  setFormData({ ...formData, message: e.target.value })
-                }
-                rows="6"
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all bg-white resize-none"
-                placeholder="Your message..."
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                className="w-full px-4 py-4 border-2 border-slate-300 rounded-xl bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-200 outline-none peer resize-none"
               />
-            </motion.div>
+              <label className="absolute left-4 top-2 text-slate-500 text-sm transition-all peer-focus:text-blue-500 peer-focus:-translate-y-4 peer-focus:scale-90">
+                Message
+              </label>
+            </div>
 
+            {/* Submit Button */}
             <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               type="submit"
               disabled={submitting}
-              className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-semibold text-lg shadow-lg hover:shadow-blue-500/50 transition-all relative overflow-hidden"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="w-full py-4 bg-blue-600 text-white rounded-xl text-lg font-semibold shadow-lg hover:bg-blue-700 disabled:opacity-50"
             >
-              {submitting ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Sending...
-                </span>
-              ) : (
-                'Send Message'
-              )}
+              {submitting ? "Sending..." : "Send Message"}
             </motion.button>
+
+            {/* Social Heading */}
+            <p className="text-slate-600 text-center font-medium">
+              Connect with me on:
+            </p>
+
+            {/* Social Icons Row */}
+            <div className="flex justify-center gap-6">
+              {socialLinks.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:scale-110 transition-transform"
+                >
+                  <img src={s.icon} className="w-9 h-9 drop-shadow" />
+                </a>
+              ))}
+            </div>
           </motion.form>
         )}
       </div>

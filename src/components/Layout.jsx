@@ -53,7 +53,7 @@ export default function Layout() {
       <footer className="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-8 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; 2024 Portfolio. All rights reserved.</p>
+            <p>&copy; 2025 Rudresh M Portfolio. All rights reserved.</p>
             <Link
               to="/admin/login"
               className="text-slate-400 hover:text-slate-300 text-sm mt-2 md:mt-0 transition-colors"

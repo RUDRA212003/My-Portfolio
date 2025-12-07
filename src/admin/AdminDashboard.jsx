@@ -6,6 +6,7 @@ import CardsManager from './components/CardsManager'
 import ProjectsManager from './components/ProjectsManager'
 import ResumeManager from './components/ResumeManager'
 import ContactManager from './components/ContactManager'
+import AdminTechStack from './components/AdminTechStack'   // ⭐ NEW
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('hero')
@@ -23,10 +24,10 @@ export default function AdminDashboard() {
     { id: 'projects', label: 'Projects' },
     { id: 'resume', label: 'Resume' },
     { id: 'contact', label: 'Contact Messages' },
+    { id: 'techstack', label: 'Tech Stack' }, // ⭐ NEW
   ]
 
   useEffect(() => {
-    // Show right fade by default if scrollable
     const scrollElement = document.getElementById("scrollTabs")
     const rightFade = document.getElementById("rightFade")
     if (scrollElement && rightFade) {
@@ -42,7 +43,6 @@ export default function AdminDashboard() {
 
     if (!leftFade || !rightFade) return
 
-    // Fade logic
     leftFade.style.opacity = element.scrollLeft > 5 ? "1" : "0"
     rightFade.style.opacity =
       element.scrollWidth - element.clientWidth - element.scrollLeft > 5 ? "1" : "0"
@@ -58,11 +58,7 @@ export default function AdminDashboard() {
             <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
 
             <div className="flex items-center space-x-4">
-              <a
-                href="/"
-                target="_blank"
-                className="text-blue-600 hover:text-blue-800"
-              >
+              <a href="/" target="_blank" className="text-blue-600 hover:text-blue-800">
                 View Site
               </a>
 
@@ -80,23 +76,15 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        {/* ⭐ Responsive Scrollable Tab Bar With Fade Indicators */}
+        {/* Tabs */}
         <div className="bg-white rounded-lg shadow-md mb-6">
           <div className="relative border-b border-gray-200">
 
-            {/* Left Fade */}
-            <div
-              id="leftFade"
-              className="pointer-events-none absolute left-0 top-0 h-full w-8 
-  bg-gradient-to-r from-slate-200 to-transparent opacity-0 transition-opacity duration-300"
-            />
+            <div id="leftFade" className="pointer-events-none absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-slate-200 to-transparent opacity-0 transition-opacity duration-300" />
 
-
-            {/* Scrollable Tabs */}
             <nav
               id="scrollTabs"
               className="flex gap-2 overflow-x-auto scrollbar-hide px-2 py-1"
-              style={{ WebkitOverflowScrolling: 'touch' }}
               onScroll={handleTabScroll}
             >
               {tabs.map((tab) => (
@@ -114,17 +102,12 @@ export default function AdminDashboard() {
               ))}
             </nav>
 
-            {/* Right Fade */}
-            <div
-              id="rightFade"
-              className="pointer-events-none absolute right-0 top-0 h-full w-8 
-  bg-gradient-to-l from-slate-200 to-transparent opacity-100 transition-opacity duration-300"
-            />
+            <div id="rightFade" className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-slate-200 to-transparent opacity-100 transition-opacity duration-300" />
 
           </div>
         </div>
 
-        {/* Main Tab Content */}
+        {/* Tab Content */}
         <div className="bg-white rounded-lg shadow-md p-6">
           {activeTab === 'hero' && <HeroManager />}
           {activeTab === 'about' && <AboutManager />}
@@ -132,6 +115,9 @@ export default function AdminDashboard() {
           {activeTab === 'projects' && <ProjectsManager />}
           {activeTab === 'resume' && <ResumeManager />}
           {activeTab === 'contact' && <ContactManager />}
+
+          {/* ⭐ NEW */}
+          {activeTab === 'techstack' && <AdminTechStack />}
         </div>
       </div>
     </div>
