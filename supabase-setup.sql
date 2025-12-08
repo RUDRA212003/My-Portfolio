@@ -90,3 +90,6 @@ CREATE TABLE IF NOT EXISTS contact_messages (
 -- - INSERT (authenticated users only, or configure as needed)
 -- - UPDATE (authenticated users only, or configure as needed)
 -- - DELETE (authenticated users only, or configure as needed)
+
+
+

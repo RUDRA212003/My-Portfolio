@@ -267,3 +267,6 @@ export default function CardItemsManager({ card, onBack, onRefresh }) {
     </div>
   )
 }
+
+
+
