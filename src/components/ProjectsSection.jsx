@@ -138,7 +138,7 @@ export default function ProjectsSection() {
                 const timer = setTimeout(() => {
                   setSelectedProject(project)
                   setShowFeedbackForm(false)
-                }, 500)
+                }, 1000)
                 setHoverTimer(timer)
               }}
               onMouseLeave={() => clearTimeout(hoverTimer)}

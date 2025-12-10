@@ -50,16 +50,18 @@ export default function CardsSection() {
     }
   }
 
-  // 📌 SHARE FUNCTION (optional but useful)
+  // 📌 SHARE FUNCTION (full card name only)
   const handleShare = async (card) => {
     const shareId = card.uuid_id || card.id
     const url = `${window.location.origin}/card/${shareId}`
 
+    const fullTitle = card.title // FULL NAME ONLY
+
     if (navigator.share) {
       try {
         await navigator.share({
-          title: card.title,
-          text: "Check out this card:",
+          title: fullTitle,
+          text: fullTitle,
           url,
         })
       } catch (err) {
@@ -67,7 +69,7 @@ export default function CardsSection() {
       }
     } else {
       await navigator.clipboard.writeText(url)
-      alert("Link copied to clipboard!")
+      alert(`Link for "${card.title}" copied!`)
     }
   }
 
