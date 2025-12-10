@@ -32,17 +32,53 @@ export default function CardDetail() {
     fetchCardData();
   }, [id]);
 
+  // 📌 Detect UUID vs Numeric ID
+  const isUUID = /^[0-9a-fA-F-]{36}$/.test(id);
+
+  // ⭐ SHARE INDIVIDUAL ITEM
+  const handleShareItem = async (item) => {
+    const itemId = item.uuid_id || item.id;
+    const cardId = card?.uuid_id || card?.id;
+
+    const url = `${window.location.origin}/card/${cardId}/item/${itemId}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: item.title,
+          text: "Check out this item!",
+          url,
+        });
+      } catch (err) {
+        console.log("Share canceled", err);
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      alert("Item link copied to clipboard!");
+    }
+  };
+
   const fetchCardData = async () => {
     try {
-      const [cardRes, itemsRes] = await Promise.all([
-        supabase.from("cards").select("*").eq("id", id).single(),
+      // Fetch CARD based on UUID or numeric ID
+      const cardQuery = isUUID
+        ? supabase.from("cards").select("*").eq("uuid_id", id).single()
+        : supabase.from("cards").select("*").eq("id", id).single();
 
-        supabase
-          .from("card_items")
-          .select("*")
-          .eq("card_id", id)
-          .order("created_at", { ascending: false }),
-      ]);
+      // Fetch ITEMS based on card_uuid or card_id
+      const itemsQuery = isUUID
+        ? supabase
+            .from("card_items")
+            .select("*")
+            .eq("card_uuid", id)
+            .order("created_at", { ascending: false })
+        : supabase
+            .from("card_items")
+            .select("*")
+            .eq("card_id", id)
+            .order("created_at", { ascending: false });
+
+      const [cardRes, itemsRes] = await Promise.all([cardQuery, itemsQuery]);
 
       if (cardRes.error) throw cardRes.error;
       if (itemsRes.error) throw itemsRes.error;
@@ -78,8 +114,6 @@ export default function CardDetail() {
 
         {/* TOP CARD HEADER */}
         <div className="bg-white rounded-xl shadow-2xl p-8 mb-12 border border-slate-200">
-
-          {/* ⭐ SMALL HEADER IMAGE (OLD STYLE) */}
           {card.image_url && (
             <motion.img
               src={card.image_url}
@@ -110,7 +144,6 @@ export default function CardDetail() {
           </motion.p>
         </div>
 
-
         {/* GRID OF ITEMS */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -120,10 +153,9 @@ export default function CardDetail() {
         >
           {items.map((item) => (
             <motion.div
-              key={item.id}
+              key={item.uuid_id || item.id}
               variants={itemVariants}
               className="bg-white rounded-xl shadow-lg border border-slate-200 hover:border-blue-300 overflow-hidden transition-all duration-300 cursor-pointer"
-
               onMouseEnter={() => {
                 if (isMobile) return;
                 const timer = setTimeout(() => setPreviewItem(item), 800);
@@ -133,7 +165,6 @@ export default function CardDetail() {
                 if (isMobile) return;
                 clearTimeout(hoverTimer);
               }}
-
               onClick={() => {
                 if (isMobile) setPreviewItem(item);
               }}
@@ -144,12 +175,6 @@ export default function CardDetail() {
                   alt={item.title}
                   className="w-full h-full object-cover"
                 />
-
-                {isMobile && (
-                  <p className="absolute bottom-2 left-2 bg-black/70 text-white px-3 py-1 text-xs rounded-md">
-                    Tap to full view
-                  </p>
-                )}
               </div>
 
               <div className="p-6">
@@ -159,6 +184,18 @@ export default function CardDetail() {
                 <p className="text-slate-600 mb-4 line-clamp-2">
                   {item.description}
                 </p>
+
+                {/* SHARE BUTTON */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // prevent modal opening
+                    handleShareItem(item);
+                  }}
+                  className="mt-2 bg-blue-600 text-white text-sm px-3 py-1 rounded-lg 
+                             hover:bg-blue-700 transition-all"
+                >
+                  Share
+                </button>
               </div>
             </motion.div>
           ))}
@@ -170,7 +207,7 @@ export default function CardDetail() {
           </div>
         )}
 
-        {/* ⭐ FULLSCREEN LEFT IMAGE + RIGHT TEXT MODAL */}
+        {/* FULLSCREEN MODAL */}
         <AnimatePresence>
           {previewItem && (
             <motion.div
@@ -187,7 +224,6 @@ export default function CardDetail() {
                 exit={{ scale: 0.85, opacity: 0 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* LEFT SIDE IMAGE */}
                 <div className="md:w-1/2 w-full flex justify-center items-center">
                   <img
                     src={previewItem.image_url}
@@ -196,7 +232,6 @@ export default function CardDetail() {
                   />
                 </div>
 
-                {/* RIGHT SIDE TEXT */}
                 <div className="md:w-1/2 w-full flex flex-col justify-center">
                   <h2 className="text-3xl font-bold text-slate-800 mb-4">
                     {previewItem.title}
@@ -210,7 +245,6 @@ export default function CardDetail() {
             </motion.div>
           )}
         </AnimatePresence>
-
       </div>
     </div>
   );

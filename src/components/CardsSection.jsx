@@ -50,6 +50,27 @@ export default function CardsSection() {
     }
   }
 
+  // 📌 SHARE FUNCTION (optional but useful)
+  const handleShare = async (card) => {
+    const shareId = card.uuid_id || card.id
+    const url = `${window.location.origin}/card/${shareId}`
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: card.title,
+          text: "Check out this card:",
+          url,
+        })
+      } catch (err) {
+        console.log("Share canceled", err)
+      }
+    } else {
+      await navigator.clipboard.writeText(url)
+      alert("Link copied to clipboard!")
+    }
+  }
+
   if (loading) {
     return (
       <section className="py-20 bg-gradient-to-b from-blue-50 to-slate-50">
@@ -80,44 +101,63 @@ export default function CardsSection() {
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
         >
-          {cards.map((card) => (
-            <motion.div
-              key={card.id}
-              variants={cardVariants}
-              whileHover={{
-                scale: 1.05,
-                y: -5,
-                transition: { duration: 0.3 },
-              }}
-              className="group"
-            >
-              <Link
-                to={`/card/${card.id}`}
-                className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-blue-200/30 transition-all duration-300 border border-slate-200 hover:border-blue-300"
+          {cards.map((card) => {
+            const routeId = card.uuid_id || card.id
+
+            return (
+              <motion.div
+                key={routeId}
+                variants={cardVariants}
+                whileHover={{
+                  scale: 1.05,
+                  y: -5,
+                  transition: { duration: 0.3 },
+                }}
+                className="group"
               >
-                {card.image_url && (
-                  <div className="h-48 overflow-hidden relative">
-                    <motion.img
-                      src={card.image_url}
-                      alt={card.title}
-                      className="w-full h-full object-cover"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.5 }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                  </div>
-                )}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
-                    {card.title}
-                  </h3>
-                  <p className="text-sm text-blue-600 uppercase font-semibold">
-                    {card.type}
-                  </p>
+                <div className="relative">
+                  {/* MAIN CARD */}
+                  <Link
+                    to={`/card/${routeId}`}
+                    className="block bg-white rounded-xl shadow-lg overflow-hidden 
+                    hover:shadow-2xl hover:shadow-blue-200/30 transition-all duration-300 
+                    border border-slate-200 hover:border-blue-300"
+                  >
+                    {card.image_url && (
+                      <div className="h-48 overflow-hidden relative">
+                        <motion.img
+                          src={card.image_url}
+                          alt={card.title}
+                          className="w-full h-full object-cover"
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ duration: 0.5 }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
+                        {card.title}
+                      </h3>
+                      <p className="text-sm text-blue-600 uppercase font-semibold">
+                        {card.type}
+                      </p>
+                    </div>
+                  </Link>
+
+                  {/* SHARE BUTTON */}
+                  <button
+                    onClick={() => handleShare(card)}
+                    className="absolute top-2 right-2 bg-white/90 backdrop-blur px-3 py-1 
+                    text-xs rounded-full shadow hover:bg-blue-600 hover:text-white 
+                    transition-all duration-200"
+                  >
+                    Share
+                  </button>
                 </div>
-              </Link>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </motion.div>
 
         {cards.length === 0 && (

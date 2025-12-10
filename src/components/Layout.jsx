@@ -1,15 +1,36 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import SmoothScroll from './SmoothScroll'
+import { useEffect, useState } from 'react'
 
 export default function Layout() {
   const location = useLocation()
   const isAdminRoute = location.pathname.startsWith('/admin')
 
+  const [scrolled, setScrolled] = useState(false)
+
+  // Detect Scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 80)   // Change navbar color after 80px scroll
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const navbarBg = scrolled
+    ? "bg-white/90 backdrop-blur-md shadow-md border-b border-slate-200"
+    : "bg-transparent"
+
+  const navText = scrolled ? "text-slate-800" : "text-white"
+  const navHover = scrolled ? "hover:text-blue-600" : "hover:text-blue-300"
+
   const content = (
     <div className="min-h-screen bg-gray-50">
+      {/* NAVBAR */}
       <motion.nav
-        className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-md border-b border-slate-200"
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navbarBg}`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
@@ -19,27 +40,28 @@ export default function Layout() {
             <div className="flex items-center">
               <Link
                 to="/"
-                className="text-xl font-bold text-slate-800 hover:text-blue-600 transition-colors"
+                className={`text-xl font-bold transition-colors ${navText} ${navHover}`}
               >
                 Rudresh M
               </Link>
             </div>
+
             <div className="flex items-center space-x-4">
               <Link
                 to="/"
-                className="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className={`${navText} ${navHover} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
               >
                 Home
               </Link>
               <Link
                 to="/projects"
-                className="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className={`${navText} ${navHover} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
               >
                 Projects
               </Link>
               <Link
                 to="/resume"
-                className="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className={`${navText} ${navHover} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
               >
                 Resume
               </Link>
@@ -47,9 +69,14 @@ export default function Layout() {
           </div>
         </div>
       </motion.nav>
-      <main className="pt-16">
+
+      {/* PAGE CONTENT */}
+      <main className={location.pathname === "/" ? "" : "pt-16"}>
         <Outlet />
       </main>
+
+
+      {/* FOOTER */}
       <footer className="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-8 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
@@ -66,10 +93,7 @@ export default function Layout() {
     </div>
   )
 
-  // Only wrap viewer pages with SmoothScroll, not admin pages
-  if (isAdminRoute) {
-    return content
-  }
+  if (isAdminRoute) return content
 
   return <SmoothScroll>{content}</SmoothScroll>
 }
