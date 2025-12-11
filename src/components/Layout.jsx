@@ -77,19 +77,92 @@ export default function Layout() {
 
 
       {/* FOOTER */}
-      <footer className="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; 2025 Rudresh M Portfolio. All rights reserved.</p>
-            <Link
-              to="/admin/login"
-              className="text-slate-400 hover:text-slate-300 text-sm mt-2 md:mt-0 transition-colors"
-            >
-              Admin
-            </Link>
-          </div>
-        </div>
-      </footer>
+      {/* FOOTER */}
+<footer className="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-10 mt-16">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    {/* Top: Social Icons */}
+    <div className="flex flex-wrap justify-center gap-6 mb-6">
+
+      {/* LinkedIn */}
+      <a
+        href="https://www.linkedin.com/in/rudresh-manjunath21/"
+        target="_blank"
+        className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+      >
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" className="w-5 h-5" />
+        <span className="text-sm">LinkedIn</span>
+      </a>
+
+      {/* GitHub */}
+      <a
+        href="https://github.com/RUDRA212003"
+        target="_blank"
+        className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+      >
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg" className="w-5 h-5" />
+        <span className="text-sm">GitHub</span>
+      </a>
+
+      {/* X (Twitter) */}
+      <a
+        href="https://x.com/yo_rudra"
+        target="_blank"
+        className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+      >
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" className="w-5 h-5" />
+        <span className="text-sm">X</span>
+      </a>
+
+      {/* Instagram */}
+      <a
+        href="https://www.instagram.com/yoyorudra_offical/?hl=en"
+        target="_blank"
+        className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+      >
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" className="w-5 h-5" />
+        <span className="text-sm">Instagram</span>
+      </a>
+
+      {/* YouTube */}
+      <a
+        href="https://www.youtube.com/@yoyorudraandroidtech"
+        target="_blank"
+        className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+      >
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" className="w-5 h-5" />
+        <span className="text-sm">YouTube</span>
+      </a>
+
+      {/* Gmail */}
+      <a
+        href="mailto:rudreshmanjunath15@gmail.com"
+        className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+      >
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/gmail.svg" className="w-5 h-5" />
+        <span className="text-sm">Email</span>
+      </a>
+
+    </div>
+
+    {/* Divider */}
+    <div className="border-t border-white/20 my-6"></div>
+
+    {/* Bottom: Rights + Admin */}
+    <div className="flex flex-col md:flex-row justify-between items-center text-sm opacity-90">
+      <p>&copy; 2025 Rudresh M Portfolio. All rights reserved.</p>
+
+      <Link
+        to="/admin/login"
+        className="text-slate-300 hover:text-white mt-3 md:mt-0 transition"
+      >
+        Admin
+      </Link>
+    </div>
+
+  </div>
+</footer>
+
     </div>
   )
 

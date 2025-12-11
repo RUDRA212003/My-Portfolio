@@ -121,6 +121,7 @@ export default function ContactForm() {
               "
               placeholder="Your Message"
             ></textarea>
+            
           </div>
 
           {/* Submit Button */}
@@ -135,6 +136,7 @@ export default function ContactForm() {
               hover:shadow-blue-500/40 transition disabled:opacity-50
             "
           >
+            
             {submitting ? "Sending..." : "Send Message"}
           </motion.button>
         </motion.form>
@@ -152,12 +154,84 @@ export default function ContactForm() {
                 flex items-center gap-3 z-50
               "
             >
+              
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
               <p className="text-slate-700 font-medium">Message sent successfully!</p>
             </motion.div>
           )}
+          
         </AnimatePresence>
       </div>
+      {/* Social Media Links */}
+<div className="max-w-3xl mx-auto mt-12 px-6">
+  <h3 className="text-center text-2xl font-bold text-slate-800 mb-6">
+    Connect With Me 🌐
+  </h3>
+
+  <div className="flex flex-wrap justify-center gap-6">
+
+    {/* LinkedIn */}
+    <a 
+      href="https://www.linkedin.com/in/rudresh-manjunath21/" 
+      target="_blank" 
+      className="group flex items-center gap-3 px-5 py-3 bg-white/50 backdrop-blur-xl border border-slate-300 rounded-xl shadow-md hover:shadow-blue-400/40 hover:bg-blue-50 transition"
+    >
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" className="w-6 h-6 group-hover:scale-110 transition" />
+      <span className="font-semibold text-slate-700">LinkedIn</span>
+    </a>
+
+    {/* GitHub */}
+    <a 
+      href="https://github.com/RUDRA212003" 
+      target="_blank" 
+      className="group flex items-center gap-3 px-5 py-3 bg-white/50 backdrop-blur-xl border border-slate-300 rounded-xl shadow-md hover:shadow-slate-400/40 hover:bg-slate-100 transition"
+    >
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg" className="w-6 h-6 group-hover:scale-110 transition" />
+      <span className="font-semibold text-slate-700">GitHub</span>
+    </a>
+
+    {/* X (Twitter) */}
+    <a 
+      href="https://x.com/yo_rudra" 
+      target="_blank" 
+      className="group flex items-center gap-3 px-5 py-3 bg-white/50 backdrop-blur-xl border border-slate-300 rounded-xl shadow-md hover:shadow-black/40 hover:bg-slate-100 transition"
+    >
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" className="w-6 h-6 group-hover:scale-110 transition" />
+      <span className="font-semibold text-slate-700">X (Twitter)</span>
+    </a>
+
+    {/* Instagram */}
+    <a 
+      href="https://www.instagram.com/yoyorudra_offical/?hl=en" 
+      target="_blank" 
+      className="group flex items-center gap-3 px-5 py-3 bg-white/50 backdrop-blur-xl border border-slate-300 rounded-xl shadow-md hover:shadow-pink-400/40 hover:bg-pink-50 transition"
+    >
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" className="w-6 h-6 group-hover:scale-110 transition" />
+      <span className="font-semibold text-slate-700">Instagram</span>
+    </a>
+
+    {/* YouTube */}
+    <a 
+      href="https://www.youtube.com/@yoyorudraandroidtech" 
+      target="_blank" 
+      className="group flex items-center gap-3 px-5 py-3 bg-white/50 backdrop-blur-xl border border-slate-300 rounded-xl shadow-md hover:shadow-red-400/40 hover:bg-red-50 transition"
+    >
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" className="w-6 h-6 group-hover:scale-110 transition" />
+      <span className="font-semibold text-slate-700">YouTube</span>
+    </a>
+
+    {/* Gmail */}
+    <a 
+      href="mailto:rudreshmanjunath15@gmail.com" 
+      className="group flex items-center gap-3 px-5 py-3 bg-white/50 backdrop-blur-xl border border-slate-300 rounded-xl shadow-md hover:shadow-red-400/40 hover:bg-red-50 transition"
+    >
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/gmail.svg" className="w-6 h-6 group-hover:scale-110 transition" />
+      <span className="font-semibold text-slate-700">Gmail</span>
+    </a>
+
+  </div>
+</div>
+
     </section>
   )
 }
