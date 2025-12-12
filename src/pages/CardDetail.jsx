@@ -17,6 +17,40 @@ const itemVariants = {
   },
 };
 
+/* -----------------------------------------
+   ⭐ HEADER SKELETON
+------------------------------------------ */
+function HeaderSkeleton() {
+  return (
+    <div className="bg-white rounded-xl shadow-2xl p-8 mb-12 border border-slate-200 animate-pulse">
+      <div className="w-full max-w-md h-48 bg-slate-200 rounded-lg mx-auto mb-6"></div>
+      <div className="h-8 bg-slate-200 rounded w-2/3 mx-auto mb-4"></div>
+      <div className="h-5 bg-slate-200 rounded w-1/3 mx-auto"></div>
+    </div>
+  );
+}
+
+/* -----------------------------------------
+   ⭐ GRID SKELETON
+------------------------------------------ */
+function GridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className="bg-white rounded-xl shadow-lg border border-slate-200 p-6 animate-pulse"
+        >
+          <div className="h-48 bg-slate-200 rounded-xl mb-4"></div>
+          <div className="h-5 bg-slate-200 rounded w-3/4 mb-3"></div>
+          <div className="h-4 bg-slate-200 rounded w-full mb-2"></div>
+          <div className="h-4 bg-slate-200 rounded w-5/6"></div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function CardDetail() {
   const { id } = useParams();
   const [card, setCard] = useState(null);
@@ -27,15 +61,62 @@ export default function CardDetail() {
   const [hoverTimer, setHoverTimer] = useState(null);
 
   const isMobile = window.innerWidth < 768;
+  const isUUID = /^[0-9a-fA-F-]{36}$/.test(id);
 
+  /* ------------------------------------------------------
+     ⭐ AUTO-SCROLL TO TOP WHEN CARD OPENS
+  ------------------------------------------------------- */
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [id]);
+
+  /* ------------------------------------------------------
+     ⭐ FETCH CARD + ITEMS WITH 1 SEC MINIMUM SKELETON
+  ------------------------------------------------------- */
   useEffect(() => {
     fetchCardData();
   }, [id]);
 
-  // 📌 Detect UUID vs Numeric ID
-  const isUUID = /^[0-9a-fA-F-]{36}$/.test(id);
+  const fetchCardData = async () => {
+    setLoading(true);
 
-  // ⭐ SHARE INDIVIDUAL ITEM
+    // Force skeleton to stay visible at least 1 second
+    const minDelay = new Promise((res) => setTimeout(res, 1000));
+
+    try {
+      const cardQuery = isUUID
+        ? supabase.from("cards").select("*").eq("uuid_id", id).single()
+        : supabase.from("cards").select("*").eq("id", id).single();
+
+      const itemsQuery = isUUID
+        ? supabase
+            .from("card_items")
+            .select("*")
+            .eq("card_uuid", id)
+            .order("created_at", { ascending: false })
+        : supabase
+            .from("card_items")
+            .select("*")
+            .eq("card_id", id)
+            .order("created_at", { ascending: false });
+
+      const [cardRes, itemsRes] = await Promise.all([cardQuery, itemsQuery, minDelay]);
+
+      if (cardRes.error) throw cardRes.error;
+      if (itemsRes.error) throw itemsRes.error;
+
+      setCard(cardRes.data);
+      setItems(itemsRes.data || []);
+    } catch (error) {
+      console.error("Error fetching card data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ------------------------------------------------------
+     ⭐ SHARE ITEM
+  ------------------------------------------------------- */
   const handleShareItem = async (item) => {
     const itemId = item.uuid_id || item.id;
     const cardId = card?.uuid_id || card?.id;
@@ -58,44 +139,21 @@ export default function CardDetail() {
     }
   };
 
-  const fetchCardData = async () => {
-    try {
-      // Fetch CARD based on UUID or numeric ID
-      const cardQuery = isUUID
-        ? supabase.from("cards").select("*").eq("uuid_id", id).single()
-        : supabase.from("cards").select("*").eq("id", id).single();
-
-      // Fetch ITEMS based on card_uuid or card_id
-      const itemsQuery = isUUID
-        ? supabase
-            .from("card_items")
-            .select("*")
-            .eq("card_uuid", id)
-            .order("created_at", { ascending: false })
-        : supabase
-            .from("card_items")
-            .select("*")
-            .eq("card_id", id)
-            .order("created_at", { ascending: false });
-
-      const [cardRes, itemsRes] = await Promise.all([cardQuery, itemsQuery]);
-
-      if (cardRes.error) throw cardRes.error;
-      if (itemsRes.error) throw itemsRes.error;
-
-      setCard(cardRes.data);
-      setItems(itemsRes.data || []);
-    } catch (error) {
-      console.error("Error fetching card data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  /* ------------------------------------------------------
+     ⭐ SHOW SKELETON WHILE LOADING
+  ------------------------------------------------------- */
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center text-xl text-slate-600">
-        Loading...
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-blue-50 py-20">
+        <div className="max-w-7xl mx-auto px-4">
+          
+          {/* Header Skeleton */}
+          <HeaderSkeleton />
+
+          {/* Grid Skeleton */}
+          <GridSkeleton />
+
+        </div>
       </div>
     );
   }
@@ -108,11 +166,15 @@ export default function CardDetail() {
     );
   }
 
+  /* ------------------------------------------------------
+     ⭐ MAIN UI AFTER LOADING
+  ------------------------------------------------------- */
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-blue-50 py-20">
       <div className="max-w-7xl mx-auto px-4">
 
-        {/* TOP CARD HEADER */}
+        {/* CARD HEADER */}
         <div className="bg-white rounded-xl shadow-2xl p-8 mb-12 border border-slate-200">
           {card.image_url && (
             <motion.img
@@ -144,7 +206,7 @@ export default function CardDetail() {
           </motion.p>
         </div>
 
-        {/* GRID OF ITEMS */}
+        {/* ITEMS GRID */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           variants={containerVariants}
@@ -165,9 +227,7 @@ export default function CardDetail() {
                 if (isMobile) return;
                 clearTimeout(hoverTimer);
               }}
-              onClick={() => {
-                if (isMobile) setPreviewItem(item);
-              }}
+              onClick={() => isMobile && setPreviewItem(item)}
             >
               <div className="h-48 overflow-hidden relative">
                 <img
@@ -178,21 +238,15 @@ export default function CardDetail() {
               </div>
 
               <div className="p-6">
-                <h3 className="text-xl font-bold text-slate-800 mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-slate-600 mb-4 line-clamp-2">
-                  {item.description}
-                </p>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">{item.title}</h3>
+                <p className="text-slate-600 mb-4 line-clamp-2">{item.description}</p>
 
-                {/* SHARE BUTTON */}
                 <button
                   onClick={(e) => {
-                    e.stopPropagation(); // prevent modal opening
+                    e.stopPropagation();
                     handleShareItem(item);
                   }}
-                  className="mt-2 bg-blue-600 text-white text-sm px-3 py-1 rounded-lg 
-                             hover:bg-blue-700 transition-all"
+                  className="mt-2 bg-blue-600 text-white text-sm px-3 py-1 rounded-lg hover:bg-blue-700 transition-all"
                 >
                   Share
                 </button>
@@ -207,7 +261,7 @@ export default function CardDetail() {
           </div>
         )}
 
-        {/* FULLSCREEN MODAL */}
+        {/* MODAL */}
         <AnimatePresence>
           {previewItem && (
             <motion.div
