@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../supabase/supabaseClient'
+
 import HeroManager from './components/HeroManager'
 import AboutManager from './components/AboutManager'
 import CardsManager from './components/CardsManager'
 import ProjectsManager from './components/ProjectsManager'
 import ResumeManager from './components/ResumeManager'
 import ContactManager from './components/ContactManager'
-import AdminTechStack from './components/AdminTechStack'   // ⭐ NEW
+import AdminTechStack from './components/AdminTechStack'
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('hero')
+  const [unreadCount, setUnreadCount] = useState(0)
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -17,106 +20,103 @@ export default function AdminDashboard() {
     navigate('/admin/login')
   }
 
+  // 🔴 Fetch unread messages count
+  const fetchUnreadCount = async () => {
+    const { count, error } = await supabase
+      .from('contact_messages')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_read', false)
+
+    if (!error) setUnreadCount(count || 0)
+  }
+
+  // 🔥 Realtime listener
+  useEffect(() => {
+    fetchUnreadCount()
+
+    const channel = supabase
+      .channel('contact-realtime')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'contact_messages' },
+        () => fetchUnreadCount()
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
   const tabs = [
     { id: 'hero', label: 'Hero' },
     { id: 'about', label: 'About' },
     { id: 'cards', label: 'Cards' },
     { id: 'projects', label: 'Projects' },
     { id: 'resume', label: 'Resume' },
-    { id: 'contact', label: 'Contact Messages' },
-    { id: 'techstack', label: 'Tech Stack' }, // ⭐ NEW
+    {
+      id: 'contact',
+      label: 'Contact Messages',
+      badge: unreadCount,
+    },
+    { id: 'techstack', label: 'Tech Stack' },
   ]
-
-  useEffect(() => {
-    const scrollElement = document.getElementById("scrollTabs")
-    const rightFade = document.getElementById("rightFade")
-    if (scrollElement && rightFade) {
-      rightFade.style.opacity =
-        scrollElement.scrollWidth > scrollElement.clientWidth ? "1" : "0"
-    }
-  }, [])
-
-  const handleTabScroll = (e) => {
-    const element = e.target
-    const leftFade = document.getElementById("leftFade")
-    const rightFade = document.getElementById("rightFade")
-
-    if (!leftFade || !rightFade) return
-
-    leftFade.style.opacity = element.scrollLeft > 5 ? "1" : "0"
-    rightFade.style.opacity =
-      element.scrollWidth - element.clientWidth - element.scrollLeft > 5 ? "1" : "0"
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
 
       {/* Header */}
       <div className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+        <div className="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
 
-            <div className="flex items-center space-x-4">
-              <a href="/" target="_blank" className="text-blue-600 hover:text-blue-800">
-                View Site
-              </a>
-
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
-              >
-                Logout
-              </button>
-            </div>
+          <div className="flex gap-4">
+            <a href="/" target="_blank" className="text-blue-600">View Site</a>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 text-white px-4 py-2 rounded"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Tabs */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="bg-white rounded shadow">
+          <nav className="flex gap-2 overflow-x-auto px-2 py-1">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative px-6 py-3 text-sm font-medium border-b-2 rounded-t
+                  ${activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600 bg-blue-50'
+                    : 'border-transparent text-gray-500 hover:bg-gray-100'
+                  }`}
+              >
+                {tab.label}
 
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-md mb-6">
-          <div className="relative border-b border-gray-200">
-
-            <div id="leftFade" className="pointer-events-none absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-slate-200 to-transparent opacity-0 transition-opacity duration-300" />
-
-            <nav
-              id="scrollTabs"
-              className="flex gap-2 overflow-x-auto scrollbar-hide px-2 py-1"
-              onScroll={handleTabScroll}
-            >
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`whitespace-nowrap px-6 py-3 text-sm font-medium border-b-2 rounded-t-md transition-all
-                    ${activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 bg-blue-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                    }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
-
-            <div id="rightFade" className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-slate-200 to-transparent opacity-100 transition-opacity duration-300" />
-
-          </div>
+                {/* 🔴 Notification badge */}
+                {tab.badge > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-2 rounded-full">
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            ))}
+          </nav>
         </div>
 
-        {/* Tab Content */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        {/* Content */}
+        <div className="bg-white rounded shadow p-6 mt-6">
           {activeTab === 'hero' && <HeroManager />}
           {activeTab === 'about' && <AboutManager />}
           {activeTab === 'cards' && <CardsManager />}
           {activeTab === 'projects' && <ProjectsManager />}
           {activeTab === 'resume' && <ResumeManager />}
           {activeTab === 'contact' && <ContactManager />}
-
-          {/* ⭐ NEW */}
           {activeTab === 'techstack' && <AdminTechStack />}
         </div>
       </div>
